@@ -1,0 +1,60 @@
+# Example production policy: Block legacy authentication for external users
+name: en-prd-ca-externals-block-legacy-001
+displayName: "Block Legacy Auth for External Users - Production"
+state: enabled
+
+metadata:
+  owner: "iam-team@example.com"
+  createdBy: "jane.smith@example.com"
+  ticketId: "JIRA-1235"
+  justification: "Block legacy authentication protocols for external/guest users per security policy SEC-002"
+  expirationDate: null
+
+conditions:
+  users:
+    includeGroups:
+      - "AAD-External-Users"
+      - "AAD-Guest-Users"
+    excludeGroups:
+      - "AAD-BreakGlass-Accounts"
+    includeUsers: []
+    excludeUsers: []
+  
+  applications:
+    includeApplications:
+      - "All"
+    excludeApplications: []
+  
+  locations:
+    includeLocations:
+      - "All"
+    excludeLocations: []
+  
+  platforms:
+    includePlatforms:
+      - "all"
+    excludePlatforms: []
+  
+  clientAppTypes:
+    - "other"  # Legacy auth protocols
+    - "exchangeActiveSync"
+  
+  signInRiskLevels: []
+  userRiskLevels: []
+
+grantControls:
+  operator: "OR"
+  builtInControls:
+    - "block"  # Block access
+  customAuthenticationFactors: []
+  termsOfUse: []
+
+sessionControls:
+  signInFrequency:
+    value: null
+    type: null
+  persistentBrowser:
+    mode: null
+  cloudAppSecurity:
+    isEnabled: false
+    cloudAppSecurityType: null

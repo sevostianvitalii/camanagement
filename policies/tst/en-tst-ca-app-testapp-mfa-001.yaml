@@ -1,0 +1,59 @@
+# Example test policy: Test app MFA
+name: en-tst-ca-app-testapp-mfa-001
+displayName: "Test App MFA - Test Environment"
+state: enabledForReportingButNotEnforced  # Report-only mode
+
+metadata:
+  owner: "dev-team@example.com"
+  createdBy: "dev.user@example.com"
+  ticketId: "JIRA-TEST-100"
+  justification: "Testing MFA enforcement for test application"
+  expirationDate: "2026-06-30T23:59:59Z"  # Temporary test policy
+
+conditions:
+  users:
+    includeGroups:
+      - "AAD-TestApp-Users"
+    excludeGroups:
+      - "AAD-BreakGlass-Accounts"
+    includeUsers: []
+    excludeUsers: []
+  
+  applications:
+    includeApplications:
+      - "test-app-client-id-12345"  # Specific test application
+    excludeApplications: []
+  
+  locations:
+    includeLocations:
+      - "All"
+    excludeLocations: []
+  
+  platforms:
+    includePlatforms:
+      - "all"
+    excludePlatforms: []
+  
+  clientAppTypes:
+    - "browser"
+    - "mobileAppsAndDesktopClients"
+  
+  signInRiskLevels: []
+  userRiskLevels: []
+
+grantControls:
+  operator: "OR"
+  builtInControls:
+    - "mfa"
+  customAuthenticationFactors: []
+  termsOfUse: []
+
+sessionControls:
+  signInFrequency:
+    value: null
+    type: null
+  persistentBrowser:
+    mode: null
+  cloudAppSecurity:
+    isEnabled: false
+    cloudAppSecurityType: null

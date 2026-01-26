@@ -1,0 +1,32 @@
+# Conflict detection rules
+conflictTypes:
+  - type: "overlapping-conditions"
+    description: "Two policies target the same users/apps with contradictory actions"
+    severity: high
+    check: |
+      Compare all policies:
+      - Same includeGroups/includeUsers
+      - Same includeApplications
+      - Different grantControls (one blocks, one allows)
+  
+  - type: "redundant-policy"
+    description: "Multiple policies achieve the same effect"
+    severity: medium
+    check: |
+      Identical conditions + identical controls = redundant
+  
+  - type: "coverage-gap"
+    description: "User groups or apps not covered by any policy"
+    severity: medium
+    check: |
+      Enumerate all Azure AD groups
+      - Check which groups are included in at least one policy
+      - Flag groups with no coverage (exclude service accounts)
+  
+  - type: "priority-conflict"
+    description: "Policy evaluation order causes unexpected behavior"
+    severity: high
+    check: |
+      If two policies have overlapping conditions:
+      - More restrictive policy should be evaluated first
+      - Report if less restrictive policy blocks stricter one

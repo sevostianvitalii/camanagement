@@ -1,0 +1,45 @@
+# Microsoft recommended best practices for Conditional Access
+# Source: https://learn.microsoft.com/en-us/azure/active-directory/conditional-access/
+
+bestPractices:
+  - id: BP001
+    name: "Exclude break-glass accounts"
+    severity: critical
+    check: "excludeGroups contains 'AAD-BreakGlass-Accounts'"
+    remediation: "Add break-glass group to excludeGroups"
+  
+  - id: BP002
+    name: "Block legacy authentication"
+    severity: high
+    check: "If control is 'block-legacy', clientAppTypes must include 'other'"
+    remediation: "Add 'other' to clientAppTypes to block legacy protocols"
+  
+  - id: BP003
+    name: "Use report-only mode for new policies"
+    severity: medium
+    check: "New policies should start with state 'enabledForReportingButNotEnforced'"
+    remediation: "Set state to report-only before enabling enforcement"
+  
+  - id: BP004
+    name: "MFA for admin accounts"
+    severity: critical
+    check: "Policies targeting 'admins' scope must include 'mfa' control"
+    remediation: "Add 'mfa' to builtInControls"
+  
+  - id: BP005
+    name: "Avoid 'All' users without exclusions"
+    severity: high
+    check: "If includeUsers contains 'All', excludeGroups must not be empty"
+    remediation: "Add service accounts and break-glass to exclusions"
+  
+  - id: BP006
+    name: "Require compliant device for external access"
+    severity: medium
+    check: "Policies for 'externals' should include compliantDevice or domainJoinedDevice"
+    remediation: "Add device compliance requirement for external users"
+  
+  - id: BP007
+    name: "Sign-in frequency for high-risk users"
+    severity: medium
+    check: "Policies with userRiskLevels 'high' should enforce sign-in frequency"
+    remediation: "Set sessionControls.signInFrequency for high-risk scenarios"

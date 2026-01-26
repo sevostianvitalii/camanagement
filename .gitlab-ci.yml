@@ -1,0 +1,80 @@
+stages:
+  - validate
+  - deploy
+
+variables:
+  PYTHON_VERSION: "3.12"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+
+.azure_oidc:
+  id_tokens:
+    AZURE_OIDC_TOKEN:
+      aud: api://AzureADTokenExchange
+
+validate_policies:
+  stage: validate
+  image: python:${PYTHON_VERSION}
+  before_script:
+    - pip install -r requirements.txt
+  script:
+    - echo "Validating naming conventions..."
+    - python -m ca_manager validate --check naming --path policies/
+    - echo "Validating compliance rules..."
+    - python -m ca_manager validate --check compliance --path policies/
+    - echo "Checking Microsoft best practices..."
+    - python -m ca_manager validate --check best-practices --path policies/
+    - echo "Detecting conflicts..."
+    - python -m ca_manager validate --check conflicts --path policies/
+  artifacts:
+    reports:
+      junit: validation-junit.xml
+    paths:
+      - validation-report.md
+    expire_in: 30 days
+    when: always
+  only:
+    - merge_requests
+    - main
+  rules:
+    - changes:
+        - policies/**/*.yaml
+        - policies/**/*.yml
+        - baseline/**/*.yaml
+
+deploy_policies:
+  stage: deploy
+  image: python:${PYTHON_VERSION}
+  extends: .azure_oidc
+  before_script:
+    - pip install -r requirements.txt
+  script:
+    - |
+      echo "Deploying CA policies to Azure AD..."
+      
+      # OIDC authentication with Azure
+      export ARM_CLIENT_ID="${AZURE_CLIENT_ID}"
+      export ARM_TENANT_ID="${AZURE_TENANT_ID}"
+      export ARM_OIDC_TOKEN="${AZURE_OIDC_TOKEN}"
+      
+      # Dry run first
+      echo "Running dry-run deployment..."
+      python -m ca_manager deploy --path policies/ --dry-run
+      
+      # Uncomment below for actual deployment
+      # echo "Deploying policies to Azure AD..."
+      # python -m ca_manager deploy --path policies/ --no-dry-run
+  environment:
+    name: production
+    url: https://portal.azure.com
+  only:
+    - main
+  when: on_success
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - policies/**/*.yaml
+        - policies/**/*.yml

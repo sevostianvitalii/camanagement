@@ -1,0 +1,120 @@
+name: CA Policy Validation and Deployment
+
+on:
+  pull_request:
+    paths:
+      - 'policies/**/*.yaml'
+      - 'policies/**/*.yml'
+      - 'baseline/**/*.yaml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'policies/**/*.yaml'
+      - 'policies/**/*.yml'
+
+# OIDC permissions for Azure authentication
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate:
+    name: Validate Policies
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Validate naming conventions
+        run: |
+          python -m ca_manager validate --check naming --path policies/
+      
+      - name: Validate compliance
+        run: |
+          python -m ca_manager validate --check compliance --path policies/
+      
+      - name: Check Microsoft best practices
+        run: |
+          python -m ca_manager validate --check best-practices --path policies/
+      
+      - name: Detect conflicts
+        run: |
+          python -m ca_manager validate --check conflicts --path policies/
+      
+      - name: Generate validation report
+        if: always()
+        run: |
+          python -m ca_manager validate --check all --path policies/ > validation-report.md || true
+      
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let report = '';
+            try {
+              report = fs.readFileSync('validation-report.md', 'utf8');
+            } catch (e) {
+              report = '## Validation Report\\n\\nValidation completed. Check workflow logs for details.';
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+  
+  deploy:
+    name: Deploy to Azure
+    needs: validate
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Azure OIDC Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+      - name: Deploy policies (dry-run)
+        run: |
+          python -m ca_manager deploy --path policies/ --dry-run
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      
+      # Uncomment below for actual deployment
+      # - name: Deploy policies (live)
+      #   run: |
+      #     python -m ca_manager deploy --path policies/ --no-dry-run
+      #   env:
+      #     AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

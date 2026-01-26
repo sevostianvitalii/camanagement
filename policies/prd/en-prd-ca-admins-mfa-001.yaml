@@ -1,0 +1,61 @@
+# Example production policy: Admin MFA enforcement
+name: en-prd-ca-admins-mfa-001
+displayName: "Admin MFA Enforcement - Production"
+state: enabled
+
+metadata:
+  owner: "iam-team@example.com"
+  createdBy: "john.doe@example.com"
+  ticketId: "JIRA-1234"
+  justification: "Enforce MFA for all admin accounts per security policy SEC-001"
+  expirationDate: null  # Permanent policy
+
+conditions:
+  users:
+    includeGroups:
+      - "AAD-Admins-Global"
+      - "AAD-Admins-Exchange"
+      - "AAD-Admins-SharePoint"
+    excludeGroups:
+      - "AAD-BreakGlass-Accounts"  # Always exclude break-glass
+    includeUsers: []
+    excludeUsers: []
+  
+  applications:
+    includeApplications:
+      - "All"  # Apply to all cloud apps
+    excludeApplications: []
+  
+  locations:
+    includeLocations:
+      - "All"
+    excludeLocations: []
+  
+  platforms:
+    includePlatforms:
+      - "all"
+    excludePlatforms: []
+  
+  clientAppTypes:
+    - "browser"
+    - "mobileAppsAndDesktopClients"
+  
+  signInRiskLevels: []
+  userRiskLevels: []
+
+grantControls:
+  operator: "OR"
+  builtInControls:
+    - "mfa"  # Require multi-factor authentication
+  customAuthenticationFactors: []
+  termsOfUse: []
+
+sessionControls:
+  signInFrequency:
+    value: 8
+    type: "hours"  # Re-authenticate every 8 hours
+  persistentBrowser:
+    mode: null
+  cloudAppSecurity:
+    isEnabled: false
+    cloudAppSecurityType: null

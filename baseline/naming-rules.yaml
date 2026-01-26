@@ -1,0 +1,24 @@
+# Naming convention validation rules
+pattern: "^en-(?P<env>prd|tst|dev)-ca-(?P<scope>allusers|admins|externals|app-[a-z0-9-]+)-(?P<control>mfa|block-legacy|compliant-device|geo-block|risk-based)-(?P<number>\\d{3})$"
+
+environments:
+  - prd
+  - tst
+  - dev
+
+scopes:
+  - allusers
+  - admins
+  - externals
+  - app-*  # Wildcard for application-specific policies
+
+controls:
+  - mfa
+  - block-legacy
+  - compliant-device
+  - geo-block
+  - risk-based
+
+numberRange:
+  min: 1
+  max: 999

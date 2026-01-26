@@ -1,0 +1,28 @@
+# Mandatory compliance rules for all policies
+requiredExclusions:
+  groups:
+    - "AAD-BreakGlass-Accounts"  # Always exclude break-glass accounts
+  users: []
+
+# Scope-specific requirements
+scopeRequirements:
+  admins:
+    mandatoryControls:
+      - "mfa"
+    forbiddenStates:
+      - "disabled"
+  
+  externals:
+    forbiddenClientAppTypes:
+      - "exchangeActiveSync"  # Block legacy auth for external users
+    mandatoryControls:
+      - "mfa"
+  
+  allusers:
+    minimumControls: 1  # At least one control must be present
+
+# Policy state restrictions
+allowedStates:
+  - enabled
+  - enabledForReportingButNotEnforced  # Report-only mode for testing
+  - disabled  # Only for emergency situations
