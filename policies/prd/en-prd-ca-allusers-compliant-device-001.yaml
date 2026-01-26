@@ -1,0 +1,64 @@
+# Test policy to verify GitHub Actions workflow
+name: en-prd-ca-allusers-compliant-device-001
+displayName: "Compliant Device Requirement - All Users - Production"
+state: enabledForReportingButNotEnforced  # Report-only mode for testing
+
+metadata:
+  owner: "iam-team@example.com"
+  createdBy: "workflow-test@example.com"
+  ticketId: "TEST-001"
+  justification: "Test policy to verify GitHub Actions validation workflow"
+  expirationDate: "2026-12-31T23:59:59Z"  # Temporary test policy
+
+conditions:
+  users:
+    includeGroups:
+      - "AAD-All-Employees"
+    excludeGroups:
+      - "AAD-BreakGlass-Accounts"  # Required exclusion
+      - "AAD-Service-Accounts"
+    includeUsers: []
+    excludeUsers: []
+  
+  applications:
+    includeApplications:
+      - "Office365"  # Target Office 365 apps
+    excludeApplications: []
+  
+  locations:
+    includeLocations:
+      - "All"
+    excludeLocations:
+      - "Trusted-Corporate-Network"  # Allow from corporate network
+  
+  platforms:
+    includePlatforms:
+      - "windows"
+      - "macOS"
+      - "iOS"
+      - "android"
+    excludePlatforms: []
+  
+  clientAppTypes:
+    - "browser"
+    - "mobileAppsAndDesktopClients"
+  
+  signInRiskLevels: []
+  userRiskLevels: []
+
+grantControls:
+  operator: "OR"
+  builtInControls:
+    - "compliantDevice"  # Require device compliance
+  customAuthenticationFactors: []
+  termsOfUse: []
+
+sessionControls:
+  signInFrequency:
+    value: null
+    type: null
+  persistentBrowser:
+    mode: null
+  cloudAppSecurity:
+    isEnabled: false
+    cloudAppSecurityType: null
