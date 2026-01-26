@@ -40,15 +40,18 @@ def main():
     required=True,
     help='Path to policies directory'
 )
-def validate(check: str, path: Path):
+@click.option(
+    '--baseline-path',
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    default=Path.cwd() / "baseline",
+    help='Path to baseline configuration directory (defaults to ./baseline)'
+)
+def validate(check: str, path: Path, baseline_path: Path):
     """Validate policies against baseline rules"""
     console.print(Panel(
         f"[bold blue]Validating policies in {path}[/bold blue]",
         title="CA Policy Validation"
     ))
-    
-    # Load baseline rules
-    baseline_path = Path(__file__).parent.parent.parent / "baseline"
     
     # Find all policy YAML files
     policy_files = list(path.rglob("*.yaml")) + list(path.rglob("*.yml"))
