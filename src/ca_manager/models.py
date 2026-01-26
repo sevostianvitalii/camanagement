@@ -1,20 +1,23 @@
 """Pydantic models for CA policy structure"""
 
-from typing import Optional
+# ruff: noqa: N815
+
 from pydantic import BaseModel, Field
 
 
 class PolicyMetadata(BaseModel):
     """Metadata for CA policy"""
+
     owner: str
     createdBy: str
     ticketId: str
     justification: str
-    expirationDate: Optional[str] = None
+    expirationDate: str | None = None
 
 
 class UserConditions(BaseModel):
     """User conditions for CA policy"""
+
     includeGroups: list[str] = Field(default_factory=list)
     excludeGroups: list[str] = Field(default_factory=list)
     includeUsers: list[str] = Field(default_factory=list)
@@ -23,24 +26,28 @@ class UserConditions(BaseModel):
 
 class ApplicationConditions(BaseModel):
     """Application conditions for CA policy"""
+
     includeApplications: list[str] = Field(default_factory=list)
     excludeApplications: list[str] = Field(default_factory=list)
 
 
 class LocationConditions(BaseModel):
     """Location conditions for CA policy"""
+
     includeLocations: list[str] = Field(default_factory=list)
     excludeLocations: list[str] = Field(default_factory=list)
 
 
 class PlatformConditions(BaseModel):
     """Platform conditions for CA policy"""
+
     includePlatforms: list[str] = Field(default_factory=list)
     excludePlatforms: list[str] = Field(default_factory=list)
 
 
 class Conditions(BaseModel):
     """All conditions for CA policy"""
+
     users: UserConditions = Field(default_factory=UserConditions)
     applications: ApplicationConditions = Field(default_factory=ApplicationConditions)
     locations: LocationConditions = Field(default_factory=LocationConditions)
@@ -52,6 +59,7 @@ class Conditions(BaseModel):
 
 class GrantControls(BaseModel):
     """Grant controls for CA policy"""
+
     operator: str = "OR"
     builtInControls: list[str] = Field(default_factory=list)
     customAuthenticationFactors: list[str] = Field(default_factory=list)
@@ -60,23 +68,27 @@ class GrantControls(BaseModel):
 
 class SignInFrequency(BaseModel):
     """Sign-in frequency session control"""
-    value: Optional[int] = None
-    type: Optional[str] = None
+
+    value: int | None = None
+    type: str | None = None
 
 
 class PersistentBrowser(BaseModel):
     """Persistent browser session control"""
-    mode: Optional[str] = None
+
+    mode: str | None = None
 
 
 class CloudAppSecurity(BaseModel):
     """Cloud app security session control"""
+
     isEnabled: bool = False
-    cloudAppSecurityType: Optional[str] = None
+    cloudAppSecurityType: str | None = None
 
 
 class SessionControls(BaseModel):
     """Session controls for CA policy"""
+
     signInFrequency: SignInFrequency = Field(default_factory=SignInFrequency)
     persistentBrowser: PersistentBrowser = Field(default_factory=PersistentBrowser)
     cloudAppSecurity: CloudAppSecurity = Field(default_factory=CloudAppSecurity)
@@ -84,6 +96,7 @@ class SessionControls(BaseModel):
 
 class ConditionalAccessPolicy(BaseModel):
     """Complete CA policy model"""
+
     name: str
     displayName: str
     state: str  # enabled, disabled, enabledForReportingButNotEnforced
@@ -95,6 +108,7 @@ class ConditionalAccessPolicy(BaseModel):
 
 class NamingRules(BaseModel):
     """Naming convention rules loaded from baseline/naming-rules.yaml"""
+
     pattern: str
     environments: list[str]
     scopes: list[str]
@@ -104,6 +118,7 @@ class NamingRules(BaseModel):
 
 class ComplianceRules(BaseModel):
     """Compliance rules loaded from baseline/compliance-rules.yaml"""
+
     requiredExclusions: dict
     scopeRequirements: dict
     allowedStates: list[str]
@@ -111,6 +126,7 @@ class ComplianceRules(BaseModel):
 
 class BestPractice(BaseModel):
     """Single best practice check"""
+
     id: str
     name: str
     severity: str

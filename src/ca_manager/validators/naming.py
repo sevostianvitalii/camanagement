@@ -1,101 +1,88 @@
-"""Naming convention validator"""
+"""Naming convention validator for CA policies"""
 
 import re
-from typing import Tuple
 from pathlib import Path
+
 import yaml
 
 from ca_manager.models import NamingRules
 
 
 def load_naming_rules(baseline_path: Path) -> NamingRules:
-    """Load naming rules from baseline YAML file"""
+    """Load naming rules from baseline config"""
     rules_file = baseline_path / "naming-rules.yaml"
-    with open(rules_file, 'r') as f:
+    with open(rules_file) as f:
         data = yaml.safe_load(f)
     return NamingRules(**data)
 
 
-def extract_components(policy_name: str, pattern: str) -> dict[str, str]:
-    """
-    Extract components from policy name using regex pattern.
-    
-    Args:
-        policy_name: Policy name (e.g., "en-prd-ca-admins-mfa-001")
-        pattern: Regex pattern with named groups
-    
-    Returns:
-        Dict of component names to values
-    """
-    compiled_pattern = re.compile(pattern)
-    match = compiled_pattern.match(policy_name)
-    
-    if not match:
-        return {}
-    
-    return match.groupdict()
+# Constants for naming convention parts (legacy fixed index fallback)
+PART_INDEX_ENV = 1
+PART_INDEX_SCOPE = 3
+PART_INDEX_APP_NAME = 4
+MIN_PARTS_FOR_SCOPE = 5
+MIN_PARTS_FOR_APP_SCOPE = 6
 
 
-def validate_policy_name(policy_name: str, rules: NamingRules) -> Tuple[bool, str]:
+def validate_policy_name(policy_name: str, rules: NamingRules) -> tuple[bool, str]:
     """
-    Validate policy name against naming convention.
-    
-    Args:
-        policy_name: Policy filename (e.g., "en-prd-ca-admins-mfa-001")
-        rules: Naming rules from baseline config
-    
-    Returns:
-        Tuple of (is_valid, error_message)
+    Validate policy name against naming convention using regex pattern.
     """
-    compiled_pattern = re.compile(rules.pattern)
-    match = compiled_pattern.match(policy_name)
-    
+    match = re.match(rules.pattern, policy_name)
     if not match:
-        return False, f"Policy name '{policy_name}' does not match pattern"
-    
-    # Extract components
+        return False, f"Name does not match pattern: {rules.pattern}"
+
     components = match.groupdict()
-    env = components.get('env', '')
-    scope = components.get('scope', '')
-    control = components.get('control', '')
-    number_str = components.get('number', '0')
-    
-    try:
-        number = int(number_str)
-    except ValueError:
-        return False, f"Invalid policy number: '{number_str}'"
-    
-    # Validate environment
-    if env not in rules.environments:
-        return False, f"Invalid environment '{env}'. Allowed: {', '.join(rules.environments)}"
-    
-    # Validate scope (handle app-* wildcard)
-    if not scope.startswith('app-') and scope not in rules.scopes:
-        return False, f"Invalid scope '{scope}'. Allowed: {', '.join(rules.scopes)} or app-*"
-    
-    # Validate control
-    if control not in rules.controls:
-        return False, f"Invalid control '{control}'. Allowed: {', '.join(rules.controls)}"
-    
-    # Validate number range
-    min_num = rules.numberRange['min']
-    max_num = rules.numberRange['max']
-    if not (min_num <= number <= max_num):
-        return False, f"Policy number {number} out of range [{min_num}-{max_num}]"
-    
+    env = components.get("env")
+    control = components.get("control")
+    number_str = components.get("number", "0")
+    scope = extract_scope(policy_name, rules.pattern)
+
+    # Validate components
+    error = None
+    if not env or env not in rules.environments:
+        error = f"Invalid environment '{env}'. Allowed: {', '.join(rules.environments)}"
+    elif not _is_valid_scope(scope, rules.scopes):
+        error = f"Invalid scope '{scope}'. Allowed: {', '.join(rules.scopes)}"
+    elif not control or control not in rules.controls:
+        error = f"Invalid control '{control}'. Allowed: {', '.join(rules.controls)}"
+    else:
+        try:
+            number = int(number_str)
+            if not (rules.numberRange["min"] <= number <= rules.numberRange["max"]):
+                error = f"Policy number {number} out of range [{rules.numberRange['min']}-{rules.numberRange['max']}]"
+        except ValueError:
+            error = f"Invalid policy number: '{number_str}'"
+
+    if error:
+        return False, error
+
     return True, ""
 
 
-def extract_scope_from_name(policy_name: str) -> str:
+def _is_valid_scope(scope: str, allowed_scopes: list[str]) -> bool:
+    """Check if scope is valid or an app-* wildcard"""
+    return scope in allowed_scopes or scope.startswith("app-")
+
+
+def extract_scope(policy_name: str, pattern: str | None = None) -> str:
     """
     Extract scope from policy name.
-    
-    Example: "en-prd-ca-admins-mfa-001" -> "admins"
+
+    Tries to use the regex pattern first, falls back to fixed indices.
     """
-    parts = policy_name.split('-')
-    if len(parts) >= 5:
-        # Handle both regular scopes and app-* scopes
-        if parts[3] == "app" and len(parts) >= 6:
-            return f"app-{parts[4]}"
-        return parts[3]
-    return ""
+    if pattern:
+        match = re.match(pattern, policy_name)
+        if match:
+            groupdict = match.groupdict()
+            if "scope" in groupdict:
+                return groupdict["scope"]
+
+    # Fallback to fixed parts
+    parts = policy_name.split("-")
+    if len(parts) >= MIN_PARTS_FOR_SCOPE:
+        if parts[PART_INDEX_SCOPE] == "app" and len(parts) >= MIN_PARTS_FOR_APP_SCOPE:
+            return f"app-{parts[PART_INDEX_APP_NAME]}"
+        return parts[PART_INDEX_SCOPE]
+
+    return "unknown"
