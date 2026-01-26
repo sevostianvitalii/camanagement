@@ -16,6 +16,11 @@ on:
     paths:
       - 'policies/**/*.yaml'
       - 'policies/**/*.yml'
+      - 'baseline/**/*.yaml'
+      - 'src/**/*.py'
+      - 'pyproject.toml'
+      - 'requirements.txt'
+      - '.github/workflows/*.yml'
 
 # OIDC permissions for Azure authentication
 permissions:
