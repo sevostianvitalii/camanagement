@@ -1,0 +1,61 @@
+# Application-Specific Control Template
+# REQUIRED: Replace all <PLACEHOLDER> values before committing
+
+name: en-<ENV>-ca-app-<APP_NAME>-<CONTROL>-<NNN>
+displayName: "<DISPLAY_NAME>"
+state: enabledForReportingButNotEnforced  # Start in report-only mode
+
+metadata:
+  owner: "<OWNER_EMAIL>"
+  createdBy: "<YOUR_EMAIL>"
+  ticketId: "<JIRA_TICKET_ID>"
+  justification: "<BUSINESS_JUSTIFICATION>"
+  expirationDate: null
+
+conditions:
+  users:
+    includeGroups:
+      - "<TARGET_AAD_GROUP>"  # Users who access this app
+    excludeGroups:
+      - "AAD-BreakGlass-Accounts"  # MANDATORY: Never remove this
+    includeUsers: []
+    excludeUsers: []
+  
+  applications:
+    includeApplications:
+      - "<APPLICATION_ID>"  # Azure AD App ID or name
+    excludeApplications: []
+  
+  locations:
+    includeLocations:
+      - "All"
+    excludeLocations: []
+  
+  platforms:
+    includePlatforms:
+      - "all"
+    excludePlatforms: []
+  
+  clientAppTypes:
+    - "browser"
+    - "mobileAppsAndDesktopClients"
+  
+  signInRiskLevels: []
+  userRiskLevels: []
+
+grantControls:
+  operator: "OR"
+  builtInControls:
+    - "<CONTROL>"  # Options: mfa, compliantDevice, domainJoinedDevice, block
+  customAuthenticationFactors: []
+  termsOfUse: []
+
+sessionControls:
+  signInFrequency:
+    value: null
+    type: null
+  persistentBrowser:
+    mode: null
+  cloudAppSecurity:
+    isEnabled: false
+    cloudAppSecurityType: null

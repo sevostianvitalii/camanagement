@@ -1,0 +1,61 @@
+# MFA Enforcement Template
+# REQUIRED: Replace all <PLACEHOLDER> values before committing
+
+name: en-<ENV>-ca-<SCOPE>-mfa-<NNN>
+displayName: "<DISPLAY_NAME>"
+state: enabledForReportingButNotEnforced  # Start in report-only mode
+
+metadata:
+  owner: "<OWNER_EMAIL>"
+  createdBy: "<YOUR_EMAIL>"
+  ticketId: "<JIRA_TICKET_ID>"
+  justification: "<BUSINESS_JUSTIFICATION>"
+  expirationDate: null  # Set if temporary, e.g., "2026-12-31T23:59:59Z"
+
+conditions:
+  users:
+    includeGroups:
+      - "<TARGET_AAD_GROUP>"  # e.g., "AAD-Admins-Global"
+    excludeGroups:
+      - "AAD-BreakGlass-Accounts"  # MANDATORY: Never remove this
+    includeUsers: []
+    excludeUsers: []
+  
+  applications:
+    includeApplications:
+      - "All"  # Or specify: "Office365", "<APP_ID>"
+    excludeApplications: []
+  
+  locations:
+    includeLocations:
+      - "All"
+    excludeLocations: []
+  
+  platforms:
+    includePlatforms:
+      - "all"
+    excludePlatforms: []
+  
+  clientAppTypes:
+    - "browser"
+    - "mobileAppsAndDesktopClients"
+  
+  signInRiskLevels: []
+  userRiskLevels: []
+
+grantControls:
+  operator: "OR"
+  builtInControls:
+    - "mfa"
+  customAuthenticationFactors: []
+  termsOfUse: []
+
+sessionControls:
+  signInFrequency:
+    value: null
+    type: null
+  persistentBrowser:
+    mode: null
+  cloudAppSecurity:
+    isEnabled: false
+    cloudAppSecurityType: null

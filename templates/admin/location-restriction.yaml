@@ -1,0 +1,61 @@
+# Location-Based Access Restriction Template
+# REQUIRED: Replace all <PLACEHOLDER> values before committing
+
+name: en-<ENV>-ca-<SCOPE>-location-<NNN>
+displayName: "<DISPLAY_NAME>"
+state: enabledForReportingButNotEnforced  # Start in report-only mode
+
+metadata:
+  owner: "<OWNER_EMAIL>"
+  createdBy: "<YOUR_EMAIL>"
+  ticketId: "<JIRA_TICKET_ID>"
+  justification: "<BUSINESS_JUSTIFICATION>"
+  expirationDate: null
+
+conditions:
+  users:
+    includeGroups:
+      - "<TARGET_AAD_GROUP>"  # e.g., "AAD-All-Employees"
+    excludeGroups:
+      - "AAD-BreakGlass-Accounts"  # MANDATORY: Never remove this
+    includeUsers: []
+    excludeUsers: []
+  
+  applications:
+    includeApplications:
+      - "All"
+    excludeApplications: []
+  
+  locations:
+    includeLocations:
+      - "<BLOCKED_LOCATION>"  # e.g., "Blocked-Countries" named location
+    excludeLocations: []
+  
+  platforms:
+    includePlatforms:
+      - "all"
+    excludePlatforms: []
+  
+  clientAppTypes:
+    - "browser"
+    - "mobileAppsAndDesktopClients"
+  
+  signInRiskLevels: []
+  userRiskLevels: []
+
+grantControls:
+  operator: "OR"
+  builtInControls:
+    - "block"  # Block access from specified locations
+  customAuthenticationFactors: []
+  termsOfUse: []
+
+sessionControls:
+  signInFrequency:
+    value: null
+    type: null
+  persistentBrowser:
+    mode: null
+  cloudAppSecurity:
+    isEnabled: false
+    cloudAppSecurityType: null

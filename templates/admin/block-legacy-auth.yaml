@@ -1,0 +1,60 @@
+# Block Legacy Authentication Template
+# REQUIRED: Replace all <PLACEHOLDER> values before committing
+
+name: en-<ENV>-ca-<SCOPE>-block-<NNN>
+displayName: "<DISPLAY_NAME>"
+state: enabledForReportingButNotEnforced  # Start in report-only mode
+
+metadata:
+  owner: "<OWNER_EMAIL>"
+  createdBy: "<YOUR_EMAIL>"
+  ticketId: "<JIRA_TICKET_ID>"
+  justification: "<BUSINESS_JUSTIFICATION>"
+  expirationDate: null
+
+conditions:
+  users:
+    includeGroups:
+      - "<TARGET_AAD_GROUP>"  # e.g., "AAD-All-Employees"
+    excludeGroups:
+      - "AAD-BreakGlass-Accounts"  # MANDATORY: Never remove this
+    includeUsers: []
+    excludeUsers: []
+  
+  applications:
+    includeApplications:
+      - "All"
+    excludeApplications: []
+  
+  locations:
+    includeLocations:
+      - "All"
+    excludeLocations: []
+  
+  platforms:
+    includePlatforms:
+      - "all"
+    excludePlatforms: []
+  
+  clientAppTypes:
+    - "other"  # Legacy authentication protocols
+  
+  signInRiskLevels: []
+  userRiskLevels: []
+
+grantControls:
+  operator: "OR"
+  builtInControls:
+    - "block"
+  customAuthenticationFactors: []
+  termsOfUse: []
+
+sessionControls:
+  signInFrequency:
+    value: null
+    type: null
+  persistentBrowser:
+    mode: null
+  cloudAppSecurity:
+    isEnabled: false
+    cloudAppSecurityType: null

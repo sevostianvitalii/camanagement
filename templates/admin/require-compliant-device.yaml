@@ -1,0 +1,65 @@
+# Require Compliant Device Template
+# REQUIRED: Replace all <PLACEHOLDER> values before committing
+
+name: en-<ENV>-ca-<SCOPE>-compliant-<NNN>
+displayName: "<DISPLAY_NAME>"
+state: enabledForReportingButNotEnforced  # Start in report-only mode
+
+metadata:
+  owner: "<OWNER_EMAIL>"
+  createdBy: "<YOUR_EMAIL>"
+  ticketId: "<JIRA_TICKET_ID>"
+  justification: "<BUSINESS_JUSTIFICATION>"
+  expirationDate: null
+
+conditions:
+  users:
+    includeGroups:
+      - "<TARGET_AAD_GROUP>"  # e.g., "AAD-All-Employees"
+    excludeGroups:
+      - "AAD-BreakGlass-Accounts"  # MANDATORY: Never remove this
+    includeUsers: []
+    excludeUsers: []
+  
+  applications:
+    includeApplications:
+      - "All"  # Or specify sensitive apps only
+    excludeApplications: []
+  
+  locations:
+    includeLocations:
+      - "All"
+    excludeLocations:
+      - "Trusted-Corporate-Network"  # Optional: exclude trusted locations
+  
+  platforms:
+    includePlatforms:
+      - "windows"
+      - "macOS"
+      - "iOS"
+      - "android"
+    excludePlatforms: []
+  
+  clientAppTypes:
+    - "browser"
+    - "mobileAppsAndDesktopClients"
+  
+  signInRiskLevels: []
+  userRiskLevels: []
+
+grantControls:
+  operator: "OR"
+  builtInControls:
+    - "compliantDevice"
+  customAuthenticationFactors: []
+  termsOfUse: []
+
+sessionControls:
+  signInFrequency:
+    value: null
+    type: null
+  persistentBrowser:
+    mode: null
+  cloudAppSecurity:
+    isEnabled: false
+    cloudAppSecurityType: null
