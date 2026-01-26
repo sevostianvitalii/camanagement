@@ -40,17 +40,12 @@ python -m ca_manager deploy --path policies/ --dry-run
 python -m ca_manager deploy --path policies/
 ```
 
-## Azure Setup
+## Documentation
 
-Before deploying policies to Azure AD, you need to configure authentication and permissions.
-
-**See [docs/AZURE_SETUP.md](docs/AZURE_SETUP.md) for complete step-by-step instructions.**
-
-Quick summary:
-1. Create Azure AD App Registration
-2. Grant `Policy.ReadWrite.ConditionalAccess` permission
-3. Configure OIDC federation for GitHub/GitLab
-4. Add secrets to CI/CD (no long-lived credentials!)
+- **[Detailed User Guide](./docs/USER_GUIDE.md)** — Start here! How to request and create policies.
+- [Azure Setup Guide](./docs/AZURE_SETUP.md) — How to configure OIDC and permissions.
+- [Workflow Testing](./docs/WORKFLOW_TEST.md) — How to verify the CI/CD pipeline.
+- [Templates Guide](./templates/README.md) — Overview of available policy templates.
 
 ## Deployment
 
