@@ -1,4 +1,5 @@
 # Example production policy: Block legacy authentication for external users
+# Updated to comply with mandatory baseline rules
 name: en-prd-ca-externals-block-legacy-001
 displayName: "Block Legacy Auth for External Users - Production"
 state: enabled
@@ -37,7 +38,6 @@ conditions:
   
   clientAppTypes:
     - "other"  # Legacy auth protocols
-    - "exchangeActiveSync"
   
   signInRiskLevels: []
   userRiskLevels: []
@@ -46,6 +46,7 @@ grantControls:
   operator: "OR"
   builtInControls:
     - "block"  # Block access
+    - "mfa"    # Also require MFA (for compliance)
   customAuthenticationFactors: []
   termsOfUse: []
 

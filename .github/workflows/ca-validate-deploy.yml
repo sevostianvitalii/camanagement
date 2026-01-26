@@ -6,6 +6,10 @@ on:
       - 'policies/**/*.yaml'
       - 'policies/**/*.yml'
       - 'baseline/**/*.yaml'
+      - 'src/**/*.py'
+      - 'pyproject.toml'
+      - 'requirements.txt'
+      - '.github/workflows/*.yml'
   push:
     branches:
       - main
@@ -37,6 +41,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+          pip install .
       
       - name: Validate naming conventions
         run: |
@@ -98,6 +103,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+          pip install .
       
       - name: Azure OIDC Login
         uses: azure/login@v2

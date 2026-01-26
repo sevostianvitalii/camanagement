@@ -20,6 +20,7 @@ validate_policies:
   image: python:${PYTHON_VERSION}
   before_script:
     - pip install -r requirements.txt
+    - pip install .
   script:
     - echo "Validating naming conventions..."
     - python -m ca_manager validate --check naming --path policies/
@@ -44,6 +45,10 @@ validate_policies:
         - policies/**/*.yaml
         - policies/**/*.yml
         - baseline/**/*.yaml
+        - src/**/*.py
+        - pyproject.toml
+        - requirements.txt
+        - .gitlab-ci.yml
 
 deploy_policies:
   stage: deploy
@@ -51,6 +56,7 @@ deploy_policies:
   extends: .azure_oidc
   before_script:
     - pip install -r requirements.txt
+    - pip install .
   script:
     - |
       echo "Deploying CA policies to Azure AD..."
