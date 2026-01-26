@@ -1,4 +1,5 @@
 # Example production policy: Block legacy authentication for external users
+# Updated to comply with mandatory baseline rules
 name: en-prd-ca-externals-block-legacy-001
 displayName: "Block Legacy Auth for External Users - Production"
 state: enabled
