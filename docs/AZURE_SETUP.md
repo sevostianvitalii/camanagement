@@ -220,9 +220,14 @@ Commit and push the changes.
 
 ## Troubleshooting
 
-### Issue: "Insufficient privileges to complete the operation"
+### Issue: "No subscriptions found for ***" or "Login failed"
 
-**Solution:** Ensure you granted admin consent for the API permissions in Step 3.
+**Cause:** The Service Principal has Graph API permissions but no direct RBAC role (like Reader) on any Azure Subscription.
+
+**Solution:**
+1. Our workflow is configured with `allow-no-subscriptions: true` to bypass this for Graph-only tasks.
+2. If you still see errors, ensure `AZURE_TENANT_ID` and `AZURE_CLIENT_ID` are correct.
+3. If you eventually need subscription access, grant the "Reader" role to your App Registration on the desired subscription.
 
 ### Issue: "AADSTS700016: Application not found"
 
