@@ -37,7 +37,6 @@ conditions:
   
   clientAppTypes:
     - "other"  # Legacy auth protocols
-    - "exchangeActiveSync"
   
   signInRiskLevels: []
   userRiskLevels: []
@@ -46,6 +45,7 @@ grantControls:
   operator: "OR"
   builtInControls:
     - "block"  # Block access
+    - "mfa"    # Also require MFA (for compliance)
   customAuthenticationFactors: []
   termsOfUse: []
 
