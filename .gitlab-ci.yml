@@ -45,6 +45,10 @@ validate_policies:
         - policies/**/*.yaml
         - policies/**/*.yml
         - baseline/**/*.yaml
+        - src/**/*.py
+        - pyproject.toml
+        - requirements.txt
+        - .gitlab-ci.yml
 
 deploy_policies:
   stage: deploy

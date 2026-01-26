@@ -6,6 +6,10 @@ on:
       - 'policies/**/*.yaml'
       - 'policies/**/*.yml'
       - 'baseline/**/*.yaml'
+      - 'src/**/*.py'
+      - 'pyproject.toml'
+      - 'requirements.txt'
+      - '.github/workflows/*.yml'
   push:
     branches:
       - main
