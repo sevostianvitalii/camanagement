@@ -4,7 +4,7 @@ import asyncio
 import os
 from typing import Any
 
-from azure.identity import DefaultAzureCredential
+from azure.identity import AzureCliCredential
 from msgraph import GraphServiceClient
 from msgraph.generated.models.conditional_access_policy import ConditionalAccessPolicy
 from msgraph.generated.models.conditional_access_condition_set import ConditionalAccessConditionSet
@@ -22,8 +22,8 @@ class AzureGraphClient:
     """Client for interacting with MS Graph Conditional Access API"""
 
     def __init__(self):
-        # DefaultAzureCredential handles both local env vars and OIDC in GitHub Actions
-        self.credential = DefaultAzureCredential()
+        # Use AzureCliCredential to leverage the session established by azure/login@v2
+        self.credential = AzureCliCredential()
         # Explicitly request the required scopes for Conditional Access policies
         scopes = ["https://graph.microsoft.com/.default"]
         self.client = GraphServiceClient(self.credential, scopes)
