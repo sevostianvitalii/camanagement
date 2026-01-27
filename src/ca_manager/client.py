@@ -84,7 +84,20 @@ class AzureGraphClient:
                 result = await self.client.identity.conditional_access.policies.post(graph_policy)
                 return f"CREATED (ID: {result.id})"
         except Exception as e:
-            raise RuntimeError(f"Failed to deploy policy '{policy_data.displayName}': {str(e)}")
+            error_str = str(e)
+            # Check for license-related errors
+            if "AccessDenied" in error_str and "scopes are missing" in error_str:
+                raise RuntimeError(
+                    f"LICENSE ERROR: Conditional Access requires Azure AD Premium P1 or P2.\n"
+                    f"Your tenant appears to have Azure AD Basic/Free which does not include "
+                    f"Conditional Access features.\n\n"
+                    f"Solutions:\n"
+                    f"  1. Upgrade to Azure AD Premium P1 (~$6/user/month)\n"
+                    f"  2. Start a free 30-day trial of Azure AD Premium P2\n"
+                    f"  3. Use Microsoft 365 E3/E5 which includes Premium licenses\n\n"
+                    f"Original error: {error_str}"
+                )
+            raise RuntimeError(f"Failed to deploy policy '{policy_data.displayName}': {error_str}")
 
 
 def run_deploy_policy(policy_data: PolicyModel, dry_run: bool = True) -> str:

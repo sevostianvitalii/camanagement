@@ -2,6 +2,17 @@
 
 Policy-as-Code tool for Azure Conditional Access management with GitHub/GitLab integration.
 
+## ⚠️ License Requirements
+
+> **IMPORTANT:** Conditional Access is a premium Azure AD feature. This tool requires:
+>
+> - **Azure AD Premium P1** or **P2** license, OR
+> - **Microsoft 365 E3/E5** (includes Azure AD Premium), OR
+> - **Enterprise Mobility + Security E3/E5**
+>
+> Azure AD Basic/Free does **not** include Conditional Access.
+> [Learn more about Azure AD licensing](https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-whatis#what-are-the-azure-ad-licenses)
+
 ## Features
 
 - ✅ **Naming convention enforcement** — `en-<env>-ca-<scope>-<control>-<nnn>`

@@ -125,34 +125,6 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       
-      - name: Debug - Show logged in identity
-        run: |
-          az account show
-          az ad signed-in-user show 2>/dev/null || echo "Running as service principal"
-      
-      - name: Debug - Get and decode access token
-        run: |
-          TOKEN=$(az account get-access-token --resource https://graph.microsoft.com --query accessToken -o tsv)
-          echo "Token acquired successfully"
-          # Decode JWT payload (middle part) to see scopes
-          echo $TOKEN | cut -d'.' -f2 | base64 -d 2>/dev/null | jq . || echo "Could not decode token"
-      
-      - name: Test Graph API access (multiple methods)
-        run: |
-          echo "=== Test 1: az rest with v1.0 ==="
-          az rest --method GET --url 'https://graph.microsoft.com/v1.0/identity/conditionalAccess/policies' || echo "v1.0 failed"
-          
-          echo ""
-          echo "=== Test 2: az rest with beta ==="
-          az rest --method GET --url 'https://graph.microsoft.com/beta/identity/conditionalAccess/policies' || echo "beta failed"
-          
-          echo ""
-          echo "=== Test 3: curl with explicit bearer token ==="
-          TOKEN=$(az account get-access-token --resource https://graph.microsoft.com --query accessToken -o tsv)
-          curl -s -H "Authorization: Bearer $TOKEN" \
-               -H "Content-Type: application/json" \
-               "https://graph.microsoft.com/v1.0/identity/conditionalAccess/policies" || echo "curl failed"
-      
       - name: Deploy policies (live)
         run: |
           python -m ca_manager deploy --path policies/ --no-dry-run
