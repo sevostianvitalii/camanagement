@@ -1,0 +1,59 @@
+# Audit-only policy for deployment verification
+name: en-prd-ca-allusers-mfa-002
+displayName: "Audit MFA Enforcement - All Users"
+state: enabledForReportingButNotEnforced  # Report-only mode
+
+metadata:
+  owner: "iam-team@example.com"
+  createdBy: "antigravity@example.com"
+  ticketId: "VERIFY-001"
+  justification: "Policy to verify end-to-end deployment via GitHub Actions"
+  expirationDate: "2026-02-28T23:59:59Z"  # Temporary verification policy
+
+conditions:
+  users:
+    includeGroups:
+      - "AAD-All-Employees"
+    excludeGroups:
+      - "AAD-BreakGlass-Accounts"
+    includeUsers: []
+    excludeUsers: []
+  
+  applications:
+    includeApplications:
+      - "All"
+    excludeApplications: []
+  
+  locations:
+    includeLocations:
+      - "All"
+    excludeLocations: []
+  
+  platforms:
+    includePlatforms:
+      - "all"
+    excludePlatforms: []
+  
+  clientAppTypes:
+    - "browser"
+    - "mobileAppsAndDesktopClients"
+  
+  signInRiskLevels: []
+  userRiskLevels: []
+
+grantControls:
+  operator: "OR"
+  builtInControls:
+    - "mfa"
+  customAuthenticationFactors: []
+  termsOfUse: []
+
+sessionControls:
+  signInFrequency:
+    value: null
+    type: null
+  persistentBrowser:
+    mode: null
+  cloudAppSecurity:
+    isEnabled: false
+    cloudAppSecurityType: null
