@@ -130,3 +130,4 @@ jobs:
           python -m ca_manager deploy --path policies/ --no-dry-run
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
