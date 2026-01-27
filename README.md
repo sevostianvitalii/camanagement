@@ -44,7 +44,6 @@ python -m ca_manager deploy --path policies/
 
 - **[Detailed User Guide](./docs/USER_GUIDE.md)** — Start here! How to request and create policies.
 - [Azure Setup Guide](./docs/AZURE_SETUP.md) — How to configure OIDC and permissions.
-- [Workflow Testing](./docs/WORKFLOW_TEST.md) — How to verify the CI/CD pipeline.
 - [Templates Guide](./templates/README.md) — Overview of available policy templates.
 
 ## Deployment
