@@ -7,7 +7,10 @@ import yaml
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+from rich.progress import Progress, SpinnerColumn, TextColumn
 
+from ca_manager.client import run_deploy_policy
+from ca_manager.models import ConditionalAccessPolicy
 from ca_manager.validators import (
     detect_conflicts,
     load_best_practices,
@@ -237,9 +240,27 @@ def deploy(path: Path, dry_run: bool):
 
     console.print(f"Found {len(policy_files)} policy file(s) to deploy\n")
 
-    # TODO: Implement Azure AD deployment
-    console.print("[yellow]⚠️  Deployment to Azure AD not yet implemented[/yellow]")
-    console.print("This will use Microsoft Graph API with OIDC authentication")
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        console=console,
+    ) as progress:
+        for policy_file in policy_files:
+            try:
+                with open(policy_file) as f:
+                    data = yaml.safe_load(f)
+                    # Create policy model instance to validate structure and for client use
+                    policy = ConditionalAccessPolicy(**data)
+                
+                task_id = progress.add_task(description=f"Deploying {policy.displayName}...", total=1)
+                
+                result = run_deploy_policy(policy, dry_run=dry_run)
+                
+                progress.update(task_id, completed=1, description=f"Deploying {policy.displayName}... [green]{result}[/green]")
+            except Exception as e:
+                console.print(f"[red]Error deploying {policy_file.name}: {str(e)}[/red]")
+
+    console.print("\n[bold green]✅ Deployment process completed[/bold green]")
 
 
 if __name__ == "__main__":
