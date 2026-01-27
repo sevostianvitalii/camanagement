@@ -125,6 +125,10 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       
+      - name: Test Graph API access
+        run: |
+          az rest --method GET --url 'https://graph.microsoft.com/v1.0/identity/conditionalAccess/policies' --headers "Content-Type=application/json" || echo "Graph API test failed"
+      
       - name: Deploy policies (live)
         run: |
           python -m ca_manager deploy --path policies/ --no-dry-run
