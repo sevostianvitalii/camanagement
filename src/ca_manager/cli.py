@@ -240,6 +240,7 @@ def deploy(path: Path, dry_run: bool):
 
     console.print(f"Found {len(policy_files)} policy file(s) to deploy\n")
 
+    has_errors = False
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
@@ -259,8 +260,13 @@ def deploy(path: Path, dry_run: bool):
                 progress.update(task_id, completed=1, description=f"Deploying {policy.displayName}... [green]{result}[/green]")
             except Exception as e:
                 console.print(f"[red]Error deploying {policy_file.name}: {str(e)}[/red]")
+                has_errors = True
 
-    console.print("\n[bold green]✅ Deployment process completed[/bold green]")
+    if has_errors:
+        console.print("\n[bold red]❌ Deployment completed with errors[/bold red]")
+        raise click.exceptions.Exit(code=1)
+    else:
+        console.print("\n[bold green]✅ Deployment process completed[/bold green]")
 
 
 if __name__ == "__main__":
