@@ -9,6 +9,8 @@ scopeRequirements:
   admins:
     mandatoryControls:
       - "mfa"
+    mandatoryPlatforms:
+      - "all"
     forbiddenStates:
       - "disabled"
   
@@ -17,9 +19,20 @@ scopeRequirements:
       - "exchangeActiveSync"  # Block legacy auth for external users
     mandatoryControls:
       - "mfa"
+    mandatoryPlatforms:
+      - "all"
   
   allusers:
-    minimumControls: 1  # At least one control must be present
+    mandatoryControls:
+      - "mfa"
+    mandatoryPlatforms:
+      - "all"
+  
+  app:
+    mandatoryControls:
+      - "mfa"
+    mandatoryPlatforms:
+      - "all"
 
 # Policy state restrictions
 allowedStates:

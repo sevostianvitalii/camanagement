@@ -73,6 +73,14 @@ def _check_scope_requirements(policy: dict, rules: ComplianceRules) -> list[tupl
         if mandatory not in controls:
             violations.append(("high", f"Scope '{scope}' requires control '{mandatory}'"))
 
+    # Check mandatory platforms
+    include_platforms = policy.get("conditions", {}).get("platforms", {}).get("includePlatforms", [])
+    for mandatory_platform in reqs.get("mandatoryPlatforms", []):
+        if mandatory_platform not in include_platforms:
+            violations.append(
+                ("high", f"Scope '{scope}' requires platform '{mandatory_platform}'")
+            )
+
     # Check forbidden client app types
     client_types = policy.get("conditions", {}).get("clientAppTypes", [])
     for forbidden in reqs.get("forbiddenClientAppTypes", []):

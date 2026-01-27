@@ -33,10 +33,7 @@ conditions:
   
   platforms:
     includePlatforms:
-      - "windows"
-      - "macOS"
-      - "iOS"
-      - "android"
+      - "all"
     excludePlatforms: []
   
   clientAppTypes:
@@ -45,10 +42,11 @@ conditions:
   
   signInRiskLevels: []
   userRiskLevels: []
-
+ 
 grantControls:
   operator: "OR"
   builtInControls:
+    - "mfa"
     - "compliantDevice"  # Require device compliance
   customAuthenticationFactors: []
   termsOfUse: []
