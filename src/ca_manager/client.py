@@ -24,7 +24,9 @@ class AzureGraphClient:
     def __init__(self):
         # DefaultAzureCredential handles both local env vars and OIDC in GitHub Actions
         self.credential = DefaultAzureCredential()
-        self.client = GraphServiceClient(self.credential)
+        # Explicitly request the required scopes for Conditional Access policies
+        scopes = ["https://graph.microsoft.com/.default"]
+        self.client = GraphServiceClient(self.credential, scopes)
 
     async def deploy_policy(self, policy_data: PolicyModel, dry_run: bool = True) -> str:
         """
