@@ -27,8 +27,16 @@ Policy-as-Code tool for Azure Conditional Access management with GitHub/GitLab i
 ### Installation
 
 ```bash
-pip install -r requirements.txt
+# Production installation
+pip install .
+
+# Development installation (includes testing and linting tools)
+pip install -e ".[dev]"
 ```
+
+**Requirements:**
+- Python 3.13 or later
+- Azure AD Premium P1/P2 license (or Microsoft 365 E3/E5)
 
 ### Validate Policies
 
